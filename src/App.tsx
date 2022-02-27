@@ -1,7 +1,6 @@
 // @ts-ignore
 import React from 'react';
 import './App.css';
-import { Father } from 'my-test';
 import { useAuth } from 'context/auth-context';
 import { AuthenticatedApp } from 'authenticated-app';
 import { UnauthenticatedApp } from 'unauthenticated-app';
@@ -15,7 +14,6 @@ function App() {
       <ErrorBoundary fallbackRender={FullPageErrorFallback}>
         {user ? <AuthenticatedApp /> : <UnauthenticatedApp />}
       </ErrorBoundary>
-      {/* <Father /> */}
     </div>
   );
 }
