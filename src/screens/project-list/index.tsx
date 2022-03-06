@@ -6,12 +6,15 @@ import styled from '@emotion/styled'
 import { useProject } from 'utils/project'
 import { useUsers } from 'utils/user'
 import { Typography } from 'antd'
+import { useUrlQueryParam } from 'utils/url'
 
 export const ProjectListScreen = () => {
-  const [param, setParam] = useState({
-    name: '',
-    personId: ''
-  })
+  // const [, setParam] = useState({
+  //   name: '',
+  //   personId: ''
+  // })
+  const [keys] = useState<('name' | 'personId')[]>(['name', 'personId'])
+  const [param, setParam] = useUrlQueryParam(keys)
   const debounceParam = useDebounce(param, 200)
   const {isLoading, error, data: list} = useProject(debounceParam)
   const {data: users} = useUsers()
@@ -25,6 +28,8 @@ export const ProjectListScreen = () => {
     <List loading={isLoading} users={users || []} dataSource={list || []} />
   </Container>
 }
+
+ProjectListScreen.whyDidYouRender = false
 
 const Container = styled.div`
   padding: 3.2rem;
