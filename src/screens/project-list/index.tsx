@@ -4,14 +4,14 @@ import { SearchPanel } from "./search-panel"
 import styled from '@emotion/styled'
 import { useProject } from 'utils/project'
 import { useUsers } from 'utils/user'
-import { Typography } from 'antd'
+import { Button, Typography } from 'antd'
 import { useProjectsSearchParams } from './utils'
 
 export const ProjectListScreen = () => {
   useDocumentTitle('项目列表', false)
 
   const [param, setParam] = useProjectsSearchParams()
-  const {isLoading, error, data: list} = useProject(useDebounce(param, 200))
+  const {isLoading, error, data: list, retry} = useProject(useDebounce(param, 200))
   const {data: users} = useUsers()
   
 
@@ -19,7 +19,7 @@ export const ProjectListScreen = () => {
     <h1>项目列表</h1>
     <SearchPanel users={users || []} param={param} setParam={setParam} />
     {error ? <Typography.Text type='danger'>{error?.message}</Typography.Text> : null}
-    <List loading={isLoading} users={users || []} dataSource={list || []} />
+    <List refresh={retry} loading={isLoading} users={users || []} dataSource={list || []} />
   </Container>
 }
 
