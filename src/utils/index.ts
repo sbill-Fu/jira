@@ -62,3 +62,16 @@ export const useDocumentTitle = (title: string, keepOnUnmount: boolean = true) =
 }
 
 export const resetRoute = () => window.location.href = window.location.origin
+
+export const useMountedRef = () => {
+  const mountedRef = useRef(false)
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  })
+
+  return mountedRef
+}
