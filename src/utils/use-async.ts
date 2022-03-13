@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useReducer, useState } from 'react';
 import { useMountedRef } from 'utils';
 
 interface State<D> {
@@ -17,28 +17,34 @@ const defaultConfig = {
   throwOnError: false
 }
 
+const useSafeDispatch = <T>(dispatch: (...args: T[]) => void) => {
+  const mountedRef = useMountedRef()
+
+  return useCallback((...args: T[]) => (mountedRef.current ? dispatch(...args) : void 0), [dispatch, mountedRef])
+}
+
 export const useAsync = <D>(initialState?: State<D>, initailConfig?: typeof defaultConfig) => {
   const config = {...defaultConfig, ...initailConfig}
-  const [state, setState] = useState<State<D>>({
+  const [state, dispatch] = useReducer((state: State<D>, action: Partial<State<D>>) => ({...state, ...action}),{
     ...defaultInitialState,
     ...initialState
   })
 
-  const mountedRef = useMountedRef()
+  const safeDispatch = useSafeDispatch(dispatch)
 
   const [retry, setRetry] = useState(() => () => {})
 
-  const setData = useCallback((data: D) => setState({
+  const setData = useCallback((data: D) => safeDispatch({
     data,
     stat: 'success',
     error: null
-  }), [])
+  }), [safeDispatch])
 
-  const setError = useCallback((error: Error) => setState({
+  const setError = useCallback((error: Error) => safeDispatch({
     error,
     stat: 'error',
     data: null
-  }), [])
+  }), [safeDispatch])
 
   // run 用来触发异步请求
   const run = useCallback((promise: Promise<D>, runConfig?: {retry: () => Promise<D>} ) => {
@@ -50,10 +56,9 @@ export const useAsync = <D>(initialState?: State<D>, initailConfig?: typeof defa
         run(runConfig?.retry(), runConfig)
       }
     })
-    setState(prevState => ({...prevState, stat: 'loading'}))
+    safeDispatch({stat: 'loading'})
     return promise.then(data => {
-      if (mountedRef.current)
-        setData(data);
+      setData(data);
       return data
     }).catch(error => {
       setError(error)
@@ -62,7 +67,7 @@ export const useAsync = <D>(initialState?: State<D>, initailConfig?: typeof defa
       }
       return error
     })
-  }, [config.throwOnError, mountedRef, setData, setError])
+  }, [config.throwOnError, setData, setError, safeDispatch])
   
   return {
     isIdle: state.stat === 'idle',
