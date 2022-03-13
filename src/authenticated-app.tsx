@@ -4,41 +4,84 @@ import { useAuth } from "context/auth-context";
 import { ProjectListScreen } from "screens/project-list";
 import { ReactComponent as SoftwareLogo } from "assets/software-logo.svg";
 import { Button, Dropdown, Menu } from "antd";
-import {Route, Routes} from 'react-router'
-import {BrowserRouter as Router} from 'react-router-dom'
-import { ProjectScreen } from 'screens/project';
-import { resetRoute } from 'utils';
-import { useState } from 'react';
-import { ProjectModal } from 'screens/project-list/project-modal';
-import { ProjectPopover } from 'components/project-popover';
+import { Route, Routes } from "react-router";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ProjectScreen } from "screens/project";
+import { resetRoute } from "utils";
+import { useState } from "react";
+import { ProjectModal } from "screens/project-list/project-modal";
+import { ProjectPopover } from "components/project-popover";
 
 export const AuthenticatedApp = () => {
-  const [projectModalOpen, setProjectModalOpen] = useState(false)
+  const [projectModalOpen, setProjectModalOpen] = useState(false);
   return (
     <Container>
-      <PageHeader setProjectModalOpen={setProjectModalOpen} />
+      <PageHeader
+        projectButton={
+          <ButtonNoPadding
+            type="link"
+            onClick={() => setProjectModalOpen(true)}
+          >
+            创建项目
+          </ButtonNoPadding>
+        }
+      />
       <Main>
         <Router>
           <Routes>
-            <Route path='/projects' element={<ProjectListScreen setProjectModalOpen={setProjectModalOpen} />} />
-            <Route path='/projects/:projectId/*' element={<ProjectScreen />}></Route>
-            <Route index element={<ProjectListScreen setProjectModalOpen={setProjectModalOpen} />} />
+            <Route
+              path="/projects"
+              element={
+                <ProjectListScreen
+                  projectButton={
+                    <ButtonNoPadding
+                      type="link"
+                      onClick={() => setProjectModalOpen(true)}
+                    >
+                      创建项目
+                    </ButtonNoPadding>
+                  }
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/*"
+              element={<ProjectScreen />}
+            ></Route>
+            <Route
+              index
+              element={
+                <ProjectListScreen
+                  projectButton={
+                    <ButtonNoPadding
+                      type="link"
+                      onClick={() => setProjectModalOpen(true)}
+                    >
+                      创建项目
+                    </ButtonNoPadding>
+                  }
+                />
+              }
+            />
           </Routes>
         </Router>
       </Main>
-      <ProjectModal projectModalOpen={projectModalOpen} onClose={() =>  setProjectModalOpen(false)} />
+      <ProjectModal
+        projectModalOpen={projectModalOpen}
+        onClose={() => setProjectModalOpen(false)}
+      />
     </Container>
   );
 };
 
-const PageHeader = (props: {setProjectModalOpen: (isOpen: boolean) => void}) => {
+const PageHeader = (props: { projectButton: JSX.Element }) => {
   return (
     <Header between={true}>
       <HeaderLeft gap={true}>
-        <ButtonNoPadding type='link' onClick={resetRoute}>
+        <ButtonNoPadding type="link" onClick={resetRoute}>
           <SoftwareLogo width={"18rem"} color={"rgb(38, 132, 255)"} />
         </ButtonNoPadding>
-        <ProjectPopover setProjectModalOpen={props.setProjectModalOpen} />
+        <ProjectPopover {...props} />
         <span>用户</span>
       </HeaderLeft>
       <HeaderRight>
@@ -50,22 +93,24 @@ const PageHeader = (props: {setProjectModalOpen: (isOpen: boolean) => void}) => 
 
 const User = () => {
   const { logout, user } = useAuth();
-  return <Dropdown
-  overlay={
-    <Menu>
-      <Menu.Item key="logout">
-        <Button type="link" onClick={logout}>
-          登出
-        </Button>
-      </Menu.Item>
-    </Menu>
-  }
->
-  <Button type="link" onClick={(e) => e.preventDefault()}>
-    Hi, {user?.name}
-  </Button>
-</Dropdown>
-}
+  return (
+    <Dropdown
+      overlay={
+        <Menu>
+          <Menu.Item key="logout">
+            <Button type="link" onClick={logout}>
+              登出
+            </Button>
+          </Menu.Item>
+        </Menu>
+      }
+    >
+      <Button type="link" onClick={(e) => e.preventDefault()}>
+        Hi, {user?.name}
+      </Button>
+    </Dropdown>
+  );
+};
 
 const Container = styled.div`
   display: grid;
