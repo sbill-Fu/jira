@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { useEditProject } from 'utils/project';
 import { User } from './search-panel';
+import { useProjectModal } from './utils';
 
 export interface Project {
   id: number;
@@ -17,12 +18,13 @@ export interface Project {
 
 interface ListProps extends TableProps<Project>{
   users: User[]
-  refresh?: () => void
 }
 
 export const List = ({users, loading, ...props}: ListProps) => {
   const { mutate } = useEditProject()
-  const pinProject = (id: number) => (pin: boolean) => mutate({id, pin}).then(props.refresh)
+  const { startEdit } = useProjectModal()
+  const pinProject = (id: number) => (pin: boolean) => mutate({id, pin})
+  const editProject = (id: number) => () => startEdit(id)
 
   return <Table
     loading={loading}
@@ -35,11 +37,11 @@ export const List = ({users, loading, ...props}: ListProps) => {
         }
       },
       {
-      title: '名称',
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      render(value, project) {
-        return <Link to={`/projects/${String(project.id)}`}>{project.name}</Link>
-      }
+        title: '名称',
+        sorter: (a, b) => a.name.localeCompare(b.name),
+        render(value, project) {
+          return <Link to={`/projects/${String(project.id)}`}>{project.name}</Link>
+        }
       },
       {
         title: '部门',
@@ -65,8 +67,8 @@ export const List = ({users, loading, ...props}: ListProps) => {
         title: '操作',
         render(value, project) {
           return <Dropdown overlay={<Menu>
-            <Menu.Item key={'edit'}>
-            </Menu.Item>
+            <Menu.Item onClick={editProject(project.id)} key={'edit'} >编辑</Menu.Item>
+            <Menu.Item key={'delete'}>删除</Menu.Item>
           </Menu>}>
             <ButtonNoPadding type='link'>...</ButtonNoPadding>
           </Dropdown>
