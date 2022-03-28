@@ -16,7 +16,7 @@ export const SearchPanel = () => {
     })
   }
 
-  return <Row gutter={4}>
+  return <Row style={{marginBottom: '12px', marginRight: '12px'}}>
     <Input style={{width: '20rem'}} placeholder='任务名' value={searchParams.name} onChange={evt => setSearchParams({name: evt.target.value})} />
     <UserSelect defaultOptionName='经办人' value={searchParams.processorId} onChange={value => setSearchParams({processorId: value})} />
     <TaskTypeSelect defaultOptionName='类型' value={searchParams.typeId} onChange={value => setSearchParams({typeId: value})} />
