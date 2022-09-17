@@ -1,20 +1,8 @@
 import { FormEvent } from 'react'
 
-const apiUrl = process.env.REACT_APP_API_URL
-
 export const LoginScreen = () => {
   const login = (param: {username: string; password: string}) => {
-    fetch(`${apiUrl}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(param)
-    }).then(async (response: Response) => {
-      if (response.ok) {
-        // await response.json()
-      }
-    })
+    
   }
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
