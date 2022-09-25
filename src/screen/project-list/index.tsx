@@ -2,7 +2,6 @@ import { List } from './list'
 import { SearchPanel } from './search-panel'
 import { useState, useEffect } from 'react'
 import { cleanObject, useDebounce, useMount } from 'utils'
-import * as qs from 'qs'
 import { useHttp } from 'utils/http'
 import styled from '@emotion/styled'
 
@@ -18,6 +17,7 @@ export const ProjectListScreen = () => {
 
   useEffect(() => {
     client('projects', {data: cleanObject(debounceParam)}).then(setList)
+    // eslint-disable-next-line
   }, [debounceParam])
 
   useMount(() => {
