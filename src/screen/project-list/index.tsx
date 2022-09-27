@@ -19,7 +19,7 @@ export const ProjectListScreen = () => {
     <Container>
       <h1>项目列表</h1>
       <SearchPanel param={param} setParam={setParam} users={users || []} />
-      <List users={users || []} dataSource={list || []} />
+      <List loading={isLoading} users={users || []} dataSource={list || []} />
     </Container>
   )
 }
