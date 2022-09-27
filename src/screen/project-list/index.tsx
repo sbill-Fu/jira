@@ -1,34 +1,25 @@
 import { List } from './list'
 import { SearchPanel } from './search-panel'
-import { useState, useEffect } from 'react'
-import { cleanObject, useDebounce, useMount } from 'utils'
-import { useHttp } from 'utils/http'
+import { useState } from 'react'
+import { useDebounce } from 'utils'
 import styled from '@emotion/styled'
+import { useProjects } from 'utils/project'
+import { useUsers } from 'utils/user'
 
 export const ProjectListScreen = () => {
   const [param, setParam] = useState({
     name: '',
     personId: '',
   })
-  const [list, setList] = useState([])
-  const [users, setUsers] = useState([])
   const debounceParam = useDebounce(param, 200)
-  const client = useHttp()
-
-  useEffect(() => {
-    client('projects', {data: cleanObject(debounceParam)}).then(setList)
-    // eslint-disable-next-line
-  }, [debounceParam])
-
-  useMount(() => {
-    client('users').then(setUsers)
-  })
+  const { isLoading, error, data: list } = useProjects(debounceParam)
+  const {data: users} = useUsers()
 
   return (
     <Container>
       <h1>项目列表</h1>
-      <SearchPanel param={param} setParam={setParam} users={users} />
-      <List list={list} users={users} />
+      <SearchPanel param={param} setParam={setParam} users={users || []} />
+      <List users={users || []} dataSource={list || []} />
     </Container>
   )
 }
