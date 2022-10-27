@@ -5,17 +5,21 @@ import { useDebounce, useDocumentTitle } from 'utils'
 import styled from '@emotion/styled'
 import { useProjects } from 'utils/project'
 import { useUsers } from 'utils/user'
+import { useUrlQueryParam } from 'utils/url'
 
 export const ProjectListScreen = () => {
-  const [param, setParam] = useState({
+  const [, setParam] = useState({
     name: '',
     personId: '',
   })
+  const [param] = useUrlQueryParam(['name', 'personId'])
   const debounceParam = useDebounce(param, 200)
   const { isLoading, error, data: list } = useProjects(debounceParam)
   const {data: users} = useUsers()
 
   useDocumentTitle('项目列表', false)
+  const r = useUrlQueryParam(['name'])
+  console.log('r: ', r)
 
   return (
     <Container>
