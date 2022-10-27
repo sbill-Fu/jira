@@ -9,12 +9,8 @@ import { useUrlQueryParam } from 'utils/url'
 import { Typography } from 'antd'
 
 export const ProjectListScreen = () => {
-  const [, setParam] = useState({
-    name: '',
-    personId: '',
-  })
   // const [keys, setKeys] = useState<('name' | 'personId')[]>(['name', 'personId'])
-  const [param] = useUrlQueryParam(['name', 'personId'])
+  const [param, setParam] = useUrlQueryParam(['name', 'personId'])
   const debounceParam = useDebounce(param, 200)
   const { isLoading, error, data: list } = useProjects(debounceParam)
   const {data: users} = useUsers()
@@ -35,7 +31,7 @@ export const ProjectListScreen = () => {
   )
 }
 
-ProjectListScreen.whyDidYouRender = true
+ProjectListScreen.whyDidYouRender = false
 
 const Container = styled.div`
   padding: 3.2rem;
