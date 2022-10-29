@@ -1,21 +1,19 @@
 import { List } from './list'
 import { SearchPanel } from './search-panel'
-import { useState } from 'react'
 import { useDebounce, useDocumentTitle } from 'utils'
 import styled from '@emotion/styled'
 import { useProjects } from 'utils/project'
 import { useUsers } from 'utils/user'
-import { useUrlQueryParam } from 'utils/url'
 import { Typography } from 'antd'
+import { useProjectsSearchParams } from 'screen/project-list/util'
 
 export const ProjectListScreen = () => {
+  useDocumentTitle('项目列表', false)
   // const [keys, setKeys] = useState<('name' | 'personId')[]>(['name', 'personId'])
-  const [param, setParam] = useUrlQueryParam(['name', 'personId'])
-  const debounceParam = useDebounce(param, 200)
-  const { isLoading, error, data: list } = useProjects(debounceParam)
+  const [param, setParam] = useProjectsSearchParams()
+  const { isLoading, error, data: list } = useProjects(useDebounce(param, 200))
   const {data: users} = useUsers()
 
-  useDocumentTitle('项目列表', false)
 
   return (
     <Container>
@@ -31,7 +29,7 @@ export const ProjectListScreen = () => {
   )
 }
 
-ProjectListScreen.whyDidYouRender = false
+ProjectListScreen.whyDidYouRender = true
 
 const Container = styled.div`
   padding: 3.2rem;
