@@ -4,10 +4,10 @@ import { useDebounce, useDocumentTitle } from 'utils'
 import styled from '@emotion/styled'
 import { useProjects } from 'utils/project'
 import { useUsers } from 'utils/user'
-import { Typography } from 'antd'
+import { Button, Row, Typography } from 'antd'
 import { useProjectsSearchParams } from 'screen/project-list/util'
 
-export const ProjectListScreen = () => {
+export const ProjectListScreen = (props: {setProjectModalOpen: (isOpen: boolean) => void}) => {
   useDocumentTitle('项目列表', false)
   // const [keys, setKeys] = useState<('name' | 'personId')[]>(['name', 'personId'])
   const [param, setParam] = useProjectsSearchParams()
@@ -17,14 +17,17 @@ export const ProjectListScreen = () => {
 
   return (
     <Container>
-      <h1>项目列表</h1>
+      <Row justify='space-between'>
+        <h1>项目列表</h1>
+        <Button onClick={() => props.setProjectModalOpen(true)}>创建项目</Button>
+      </Row>
       <SearchPanel param={param} setParam={setParam} users={users || []} />
       {
         error ? (
           <Typography.Text type='danger'>{error.message}</Typography.Text>
         ) : null
       }
-      <List refresh={retry} loading={isLoading} users={users || []} dataSource={list || []} />
+      <List setProjectModalOpen={props.setProjectModalOpen} refresh={retry} loading={isLoading} users={users || []} dataSource={list || []} />
     </Container>
   )
 }
