@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useReducer, useState } from 'react'
 import { useMountedRef } from 'utils'
 
 interface State<D> {
@@ -17,40 +17,52 @@ const defaultConfig = {
   throwOnError: false
 }
 
+/**
+ * ...args 表示 dispatch 函数接收的是一个个的参数，比如 dispatch(1, 2), args 还是一个数组
+ * safe 表示这个 dispatch 是安全的，因为会帮我们判断组件是否是挂载好的
+ *  */
+const useSafeDispatch = <T>(dispatch: (...args: T[]) => void) => {
+  const mountedRef = useMountedRef()
+  return useCallback((...args: T[]) => (mountedRef.current ? dispatch(...args) : void 0), [dispatch, mountedRef])
+}
+
 export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defaultConfig) => {
   const config = {...defaultConfig, initialConfig}
-  const [state, setState] = useState<State<D>>({
-    ...defaultInitialState,
-    ...initialState
-  })
+  const [state, dispatch] = useReducer(
+    (state: State<D>, action: Partial<State<D>>) => ({...state, ...action}),
+    {
+      ...defaultInitialState,
+      ...initialState
+    }
+  )
 
-  const mountedRef = useMountedRef()
+  const safeDispatch = useSafeDispatch(dispatch)
   const [retry, setRetry] = useState(() => () => {})
 
-  const setData = useCallback((data: D) => setState({
+  const setData = useCallback((data: D) => safeDispatch({
     data,
     stat: 'success',
     error: null
-  }), [])
+  }), [safeDispatch])
 
-  const setError = useCallback((error: Error) => setState({
+  const setError = useCallback((error: Error) => safeDispatch({
     error,
     stat: 'error',
     data: null
-  }), [])
+  }), [safeDispatch])
 
   const run = useCallback((promise: Promise<D>, runConfig?: { retry: () => Promise<D>}) => {
     if (!promise || !promise.then) {
       throw new Error('请输入 Promise 类型数据')
     }
-    setState(prevState => ({...prevState, stat: 'loading'}))
+    safeDispatch({stat: 'loading'})
     setRetry(() => () => {
       if (runConfig?.retry) {
         run(runConfig?.retry(), runConfig)
       }
     })
     return promise.then(data => {
-      if (mountedRef.current) setData(data)
+      setData(data)
       return data
     }).catch(error => {
       setError(error)
@@ -59,7 +71,7 @@ export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defa
       }
       return error
     })
-  }, [config.throwOnError, mountedRef, setData, setError])
+  }, [config.throwOnError, setData, setError, safeDispatch])
 
   return {
     isIdle: state.stat === 'idle',
