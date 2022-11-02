@@ -1,17 +1,20 @@
-import React, { ReactNode, useState } from 'react'
+import React, { ReactNode, useCallback } from 'react'
 import * as auth from 'auth-provider'
 import { User } from 'screen/project-list/search-panel'
 import { http } from 'utils/http'
 import { useMount } from 'utils'
 import { useAsync } from 'utils/use-async'
 import { FullPageErrorFallback, FullPageLoading } from 'components/lib'
+import * as authStore from 'store/auth.slice'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectUser } from 'store/auth.slice'
 
-interface AuthForm {
+export interface AuthForm {
   username: string;
   password: string;
 }
 
-const bootstrapUser = async () => {
+export const bootstrapUser = async () => {
   let user = null
   const token = auth.getToken()
   if (token) {
@@ -56,9 +59,15 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
 }
 
 export const useAuth = () => {
-  const context = React.useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth 必须在 AuthProvider 中使用')
+  const dispatch = useDispatch()
+  const user = useSelector(selectUser)
+  const login = useCallback((form: AuthForm) => dispatch(authStore.login(form)), [dispatch])
+  const register = useCallback((form: AuthForm) => dispatch(authStore.register(form)), [dispatch])
+  const logout = useCallback(() => dispatch(authStore.logout()), [dispatch])
+  return {
+    user,
+    login,
+    register,
+    logout
   }
-  return context
 }
