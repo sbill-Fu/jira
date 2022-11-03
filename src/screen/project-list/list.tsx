@@ -69,7 +69,8 @@ export const List = ({users, ...props}: ListProps) => {
           render(value, project) {
             return <Dropdown overlay={<Menu>
               <Menu.Item key={'edit'}>
-                <ButtonNoPadding type='link' onClick={() => open()}>编辑项目</ButtonNoPadding>
+                <ButtonNoPadding type='link' onClick={() => open()}>编辑</ButtonNoPadding>
+                <ButtonNoPadding type='link' onClick={() => open()}>删除</ButtonNoPadding>
               </Menu.Item>
             </Menu>}>
               <ButtonNoPadding type='link'>...</ButtonNoPadding>
