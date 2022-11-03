@@ -1,15 +1,13 @@
-import { useCallback, useEffect } from 'react'
+import { useQuery } from 'react-query'
 import { Project } from 'screen/project-list/list'
-import { cleanObject } from 'utils'
 import { useHttp } from 'utils/http'
 import { useAsync } from 'utils/use-async'
 
 
 export const useProjects = (param?: Partial<Project>) => {
   const client = useHttp()
-  const { run, ...result } = useAsync<Project[]>()
-
-  const fetchProjects = useCallback(() => client('projects', {data: cleanObject(param || {})}).then((list: Project[]) => {
+  
+  return useQuery<Project[]>(['projects', param], () => client('projects', { data: param }).then((list: Project[]) => {
     // 将接口返回的值加上 key 值，否则 table 会有警告信息
     return list.map(item => {
       return {
@@ -17,15 +15,7 @@ export const useProjects = (param?: Partial<Project>) => {
         key: item.id
       }
     })
-  }), [client, param])
-
-  useEffect(() => {
-    run(fetchProjects(), {
-      retry: fetchProjects
-    })
-    // eslint-disable-next-line
-  }, [param])
-  return result
+  }))
 }
 
 export const useEditProject = () => {
