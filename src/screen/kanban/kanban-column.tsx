@@ -6,6 +6,7 @@ import bugIcon from 'assets/bug.svg'
 import { useTaskTypes } from 'utils/task-type'
 import styled from '@emotion/styled'
 import { Card } from 'antd'
+import { CreateTask } from 'screen/kanban/create-task'
 
 const TaskTypeIcon = ({id}: {id: number}) => {
   const {data: taskTypes} = useTaskTypes()
@@ -29,11 +30,12 @@ export const KanbanColumn = ({kanban}: {kanban: Kanban}) => {
             <TaskTypeIcon id={task.typeId} />
           </Card>)
       }
+      <CreateTask kanbanId={kanban.id} />
     </TaskContainer>
   </Container>
 }
 
-const Container = styled.div`
+export const Container = styled.div`
   min-width: 27rem;
   border-radius: 6px;
   background-color: rgb(244, 245, 247);
