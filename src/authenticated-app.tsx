@@ -16,7 +16,7 @@ export const AuthenticatedApp = () => {
     <Container>
       <Router>
         <PageHeader />
-        <main>
+        <Main>
             <Routes>
               <Route path="/" element={<Navigate to="projects" />} />
               {/* <Route index element={<ProjectListScreen />} /> */}
@@ -29,11 +29,16 @@ export const AuthenticatedApp = () => {
               <Route path="/projects/:projectId/*" element={<ProjectScreen />} />
             </Routes>
           <ProjectModal />
-        </main>
+        </Main>
       </Router>
     </Container>
   )
 }
+
+const Main = styled.main`
+  display: flex;
+  overflow: hidden;
+`
 
 const PageHeader = () => {
   return <Header between={true}>
