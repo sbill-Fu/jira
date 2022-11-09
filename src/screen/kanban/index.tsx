@@ -4,6 +4,7 @@ import { ScreenContainer } from 'components/lib'
 import { CreateKanban } from 'screen/kanban/create-kanban'
 import { KanbanColumn } from 'screen/kanban/kanban-column'
 import { SearchPanel } from 'screen/kanban/search-panel'
+import { TaskModal } from 'screen/kanban/task-modal'
 import { useKanbanSearchParams, useProjectInUrl, useTaskSearchParams } from 'screen/kanban/util'
 import { useDocumentTitle } from 'utils'
 import { useKanbans } from 'utils/kanban'
@@ -28,6 +29,7 @@ export const KanbanScreen = () => {
       <CreateKanban />
       </ColumnsContainer>
     }
+    <TaskModal />
   </ScreenContainer>
 }
 
