@@ -1,10 +1,10 @@
-import { Form, Input, Modal } from 'antd'
+import { Button, Form, Input, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { TaskTypeSelect } from 'components/task-type-select'
 import { UserSelect } from 'components/user-select'
 import { useEffect } from 'react'
 import { useTasksModal, useTasksQueryKey } from 'screen/kanban/util'
-import { useEditTask } from 'utils/task'
+import { useDeleteTask, useEditTask } from 'utils/task'
 
 const layout = {
   labelCol: {span: 8},
@@ -15,6 +15,7 @@ export const TaskModal = () => {
   const [form] = useForm()
   const {editingTaskId, editingTask, close} = useTasksModal()
   const {mutateAsync: editTask, isLoading: editLoading} = useEditTask(useTasksQueryKey())
+  const {mutate: deleteTask} = useDeleteTask(useTasksQueryKey())
 
   const onCancel = () => {
     close()
@@ -24,6 +25,18 @@ export const TaskModal = () => {
   const onOk = async () => {
     await editTask({...editingTask, ...form.getFieldsValue()})
     close()
+  }
+
+  const startDelete = () => {
+    close()
+    Modal.confirm({
+      okText: '确定',
+      cancelText: '取消',
+      title: '确定删除任务吗',
+      onOk() {
+        deleteTask(Number(editingTaskId))
+      }
+    })
   }
 
   useEffect(() => {
@@ -51,5 +64,8 @@ export const TaskModal = () => {
         <TaskTypeSelect />
       </Form.Item>
     </Form>
+    <div style={{textAlign: 'right'}}>
+      <Button style={{fontSize: '14px'}} size='small' onClick={startDelete}>删除</Button>
+    </div>
   </Modal>
 }
