@@ -6,7 +6,7 @@ import { useProjects } from 'utils/project'
 
 export const ProjectPopover = () => {
   const { open } = useProjectModal()
-  const { data: projects } = useProjects()
+  const { data: projects, refetch } = useProjects()
   const pinnedProjects = projects?.filter(project => project.pin)
   const content = <ContentContainer>
     <Typography.Text type='secondary'>收藏项目</Typography.Text>
@@ -20,7 +20,7 @@ export const ProjectPopover = () => {
     <Divider />
     <ButtonNoPadding type='link' onClick={() => open()}>创建项目</ButtonNoPadding>
   </ContentContainer>
-  return <Popover placement='bottom' content={content}>
+  return <Popover placement='bottom' content={content} onVisibleChange={() => refetch()}>
     <span>项目</span>
   </Popover>
 }

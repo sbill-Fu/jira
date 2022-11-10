@@ -1,16 +1,17 @@
-import { useEffect } from 'react'
+import { useQuery } from 'react-query'
 import { User } from "types/user"
-import { cleanObject } from 'utils'
 import { useHttp } from 'utils/http'
-import { useAsync } from 'utils/use-async'
 
 export const useUsers = (param?: Partial<User>) => {
   const client = useHttp()
-  const { run, ...result } = useAsync<User[]>()
-
-  useEffect(() => {
-    run(client('users', {data: cleanObject(param || {})}))
-    // eslint-disable-next-line
-  }, [param])
-  return result
+  
+  return useQuery<User[]>(['users', param], () => client('users', { data: param }).then((list: User[]) => {
+    // 将接口返回的值加上 key 值，否则 table 会有警告信息
+    return list.map(item => {
+      return {
+        ...item,
+        key: item.id
+      }
+    })
+  }))
 }
