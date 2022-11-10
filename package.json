@@ -32,7 +32,10 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build -r git@github.com:sbill-Fu/sbill-fu.github.io.git -b main",
+    "publish": "gh-pages -d build -r git@github.com:sbill-Fu/sbill-fu.github.io.git -b main"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +59,7 @@
     "workerDirectory": "public"
   },
   "devDependencies": {
-    "@welldone-software/why-did-you-render": "^7.0.1"
+    "@welldone-software/why-did-you-render": "^7.0.1",
+    "gh-pages": "^4.0.0"
   }
 }
