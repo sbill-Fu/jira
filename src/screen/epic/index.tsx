@@ -1,27 +1,47 @@
-import { Button, List } from 'antd'
+import { Button, List, Modal } from 'antd'
 import { Row, ScreenContainer } from 'components/lib'
 import dayjs from 'dayjs'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useEpicSearchParams } from 'screen/epic/util'
+import { CreateEpic } from 'screen/epic/create-epic'
+import { useEpicSearchParams, useEpicsQueryKey } from 'screen/epic/util'
 import { useProjectInUrl } from 'screen/kanban/util'
-import { useEpics } from 'utils/epic'
+import { Epic } from 'types/epic'
+import { useDeleteEpic, useEpics } from 'utils/epic'
 import { useTasks } from 'utils/task'
 
 export const EpicScreen = () => {
   const {data: currentProject} = useProjectInUrl()
   const {data: epics} = useEpics(useEpicSearchParams())
   const {data: tasks} = useTasks({projectId: currentProject?.id})
+  const {mutate: deleteEpic} = useDeleteEpic(useEpicsQueryKey())
+  const [epicCreateOpen, setEpicCreateOpen] = useState(false)
+
+  const confirmDeleteEpic = (epic: Epic) => {
+    Modal.confirm({
+      title: `确定删除任务组：${epic.name}`,
+      content: '点击确定删除',
+      okText: '确定',
+      onOk() {
+        deleteEpic(epic.id)
+      }
+    })
+  }
 
   return <ScreenContainer>
-    <h1>{currentProject?.name}任务组</h1>
+    <Row between={true}>
+      <h1>{currentProject?.name}任务组</h1>
+      <Button type='link' onClick={() => setEpicCreateOpen(true)}>创建任务组</Button>
+    </Row>
     <List
+      style={{overflowY: 'scroll'}}
       dataSource={epics}
       itemLayout='vertical'
       renderItem={epic => <List.Item>
         <List.Item.Meta
           title={<Row between={true}>
             <span>{epic.name}</span>
-            <Button type='link'>删除</Button>
+            <Button type='link' onClick={() => confirmDeleteEpic(epic)}>删除</Button>
           </Row>}
           description={<div>
             <div>开始时间：{dayjs(epic.start).format('YYYY-MM-DD')}</div>
@@ -40,5 +60,6 @@ export const EpicScreen = () => {
         </div>
       </List.Item>}
     />
+    <CreateEpic onClose={() => setEpicCreateOpen(false)} visible={epicCreateOpen} />
   </ScreenContainer>
 }
