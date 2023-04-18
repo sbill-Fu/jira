@@ -37,6 +37,9 @@
     "deploy": "gh-pages -d build -r git@github.com:sbill-Fu/sbill-fu.github.io.git -b main",
     "publish": "gh-pages -d build -r git@github.com:sbill-Fu/sbill-fu.github.io.git -b main"
   },
+  "engines": {
+    "node": "^16.10.0" 
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
